@@ -1,0 +1,88 @@
+<div class="card card-body">
+    <h3>Search</h3>
+    <form action="<%= records_path %>">
+        <fieldset>
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" class="form-control mb-2">
+            <div class="row">
+                <div class="col-12 col-sm-4">
+                    <label for="artist">Artist</label>
+                    <input type="text" name="artist" id="artist" class="form-control mb-2">
+                </div>
+                <div class="col-12 col-sm-4">
+                    <label for="year">Year (No later than)</label>
+                    <input type="number" name="year" id="year" class="form-control mb-2">
+                </div>
+                <div class="col-12 col-sm-4">
+                    <label for="genre">Genre</label>
+                    <select name="genre" id="genre" class="form-select mb-4">
+                        <option value selected>-- Don't filter by genre --</option>
+                        <% @genres.each do |genre| %>
+                            <option value="<%= genre.id %>"><%= genre.name %></option>
+                        <% end %>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <% if defined?(@records) %>
+        <br><br>
+
+        <div class="d-flex flex-row justify-content-between mb-2">
+            <h3>Results</h3>
+            <a href="<%= new_record_path %>" class="btn btn-primary">New Record</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Genre</th>
+                    <th>Artist</th>
+                    <th>Year</th>
+                    <th>Number of Discs</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <% if @records.empty? %>
+                    <tr>
+                        <td colspan="6" class="text-center">No matched records found</td>
+                    </tr>
+                <% else %>
+                    <% @records.each do |record| %>
+                        <tr>
+                            <td><%= record.name %></td>
+                            <td>
+                                <% if record.genre.name != nil %>
+                                    <a href="<%= genre_path(record.genre.id) %>"><%= record.genre.name %></a>
+                                <% else %>
+                                    N/A
+                                <% end %>
+                            </td>
+                            <td><%= record.artist %></td>
+                            <td><%= record.year %></td>
+                            <td><%= record.number_of_discs %></td>
+                            <td>
+                                <a href="/records/<%= record.id %>" class="btn btn-sm btn-primary border-0 d-inline-block text-decoration-none">Edit</a>
+                                <%= form_with(url: record_path(record.id), method: 'delete', class: 'd-inline') do |_| %>
+                                    <button class="btn btn-sm btn-danger border-0 d-inline-block" onclick='
+                                        event.preventDefault();
+                                        if (confirm(`Are you sure you want to delete "<%= record.name %>"?`)) {
+                                            this.parentElement.submit();
+                                        }
+                                    '>Delete</button>
+                                <% end %>
+                            </td>
+                        </tr>
+                    <% end %>
+                <% end %>
+                </tbody>
+            </table>
+        </div>
+    <% end %>
+</div>
